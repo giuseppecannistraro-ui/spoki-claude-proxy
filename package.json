@@ -1,0 +1,10 @@
+{
+  "name": "spoki-claude-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vercel serverless proxy that forwards requests from the Spoki Meeting Agent app to Anthropic's Claude API.",
+  "engines": {
+    "node": ">=18"
+  }
+}
