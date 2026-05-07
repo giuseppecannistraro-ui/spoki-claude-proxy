@@ -1,13 +1,12 @@
 const ALLOWED_MODELS = new Set([
-     "gemini-2.5-flash",
-     "gemini-2.5-flash-lite",
-     "gemini-2.5-pro",
-     "gemini-2.0-flash",
-     "gemini-2.0-flash-lite",
-     "gemini-1.5-flash",
-     "gemini-1.5-flash-8b",
-     "gemini-1.5-pro"
-   ]);
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-pro",
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
+  "gemini-1.5-flash",
+  "gemini-1.5-flash-8b",
+  "gemini-1.5-pro"
 ]);
 
 function setCors(res) {
@@ -68,35 +67,3 @@ export default async function handler(req, res) {
     upstream = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`,
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(geminiBody)
-      }
-    );
-  } catch (err) {
-    return res.status(502).json({ error: "Upstream fetch failed: " + err.message });
-  }
-
-  const text = await upstream.text();
-  let data = null;
-  try { data = JSON.parse(text); } catch (_) {}
-
-  if (!upstream.ok) {
-    const msg = (data && (data.error?.message || JSON.stringify(data.error))) || text.slice(0, 300);
-    return res.status(upstream.status).json({ error: "Gemini " + upstream.status + ": " + msg });
-  }
-
-  const reply = (data?.candidates?.[0]?.content?.parts || [])
-    .map(p => p.text || "")
-    .join("");
-
-  res.status(200).setHeader("Content-Type", "application/json");
-  res.send(JSON.stringify({
-    model,
-    content: [{ type: "text", text: reply }]
-  }));
-}
-
-function safeJson(s) {
-  try { return JSON.parse(s); } catch { return {}; }
-}
